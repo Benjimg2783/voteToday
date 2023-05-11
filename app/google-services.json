@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "444121228088",
+    "project_id": "proyecto-integrado-67301",
+    "storage_bucket": "proyecto-integrado-67301.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:444121228088:android:86677314c46f96f2d097cd",
+        "android_client_info": {
+          "package_name": "com.example.votetoday"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "444121228088-goag61ovm2qj9li3umaldfl666318rpt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.votetoday",
+            "certificate_hash": "2ce627663013774d3894f89e667271068e47375e"
+          }
+        },
+        {
+          "client_id": "444121228088-dd2pehgpjfv67k7ci8hdedtuln9v4485.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMAh1lpPdYyjiPc9M7RDYuPR0vd5IOcAQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "444121228088-dd2pehgpjfv67k7ci8hdedtuln9v4485.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
