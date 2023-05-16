@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,13 +40,13 @@ fun PreviewProfile() {
 }
 
 
-
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hiltViewModel()) {
+    viewModel.updateUname()
     Scaffold(
         bottomBar = { NavigationFunctions.NavBar(navController = navController as NavHostController) }
-    ){
+    ) {
         SystemBarColor(color = VoteTodayOrange)
         Box(
             modifier = Modifier
@@ -59,6 +61,7 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
+
                 //crea una imagen circular a la izquierda de la fila, que se puede cambiar y contenga R.drawable.logonobackground
                 Image(
                     painter = painterResource(id = R.drawable.foto_perfil_default),
@@ -68,24 +71,24 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
                         .height(heightPercentage(10))
                         .clip(CircleShape)
                 )
-                Text(
-                    text = "Nombre de usuario",
-                    style = TextStyle(
-                        color = Color.Black,
-                        fontSize = 20.sp
-                    )
-                )
+                OutlinedTextField(value = viewModel.uName, onValueChange = {
+                    viewModel.onUnameChange(it)
+                    viewModel.uName = it
+
+
+                })
+
 
             }
             LazyColumn(
                 modifier = Modifier.run {
                     width(widthPercentage(92))
-                                .height(heightPercentage(93))
-                                .padding(
-                                    top=heightPercentage(20),
-                                    start = widthPercentage(8)
-                                )
-                                .background(Color.White, RoundedCornerShape(5))
+                        .height(heightPercentage(93))
+                        .padding(
+                            top = heightPercentage(20),
+                            start = widthPercentage(8)
+                        )
+                        .background(Color.White, RoundedCornerShape(5))
                 }
             ) {
 

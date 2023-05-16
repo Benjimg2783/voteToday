@@ -1,5 +1,6 @@
 package com.example.votetoday.AppScreens.LoginAndRegistre
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.foundation.Image
@@ -372,14 +373,15 @@ fun SubmittButton(
                         turnPopNContinue()
                     }
                 }
-                false -> if (password == repeatPassword && password.length >= 8) {
 
-                    FBAuth.onSignUp(email, password, context) { success ->
+                false -> if (password == repeatPassword && password.length >= 8) {
+                    Log.i("Register", "Registering user")
+                    FBAuth.onSignUp(email = email, password= password, context= context, uname =  uName) { success ->
+
                         if (success) {
                             turnPopNContinue()
                         }
                     }
-                    FBUserQuerys.setUserBasicData(uName,context, email = email)
                 } else if (password.length < 8) {
                     Toast.makeText(
                         context,
@@ -391,7 +393,6 @@ fun SubmittButton(
                         .show()
                 }
             }
-
         }, colors = ButtonDefaults.buttonColors(backgroundColor = VoteTodayOrange)
     ) {
 
