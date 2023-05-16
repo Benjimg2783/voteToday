@@ -11,6 +11,7 @@ sealed class Screens (val ruta : String, val icon:ImageVector?= null){
     object LoginScreen : Screens("LoginScreen", Icons.Filled.ExitToApp)
     object MainScreen: Screens("MainScreen", Icons.Filled.Home)
     object ProfileScreen: Screens("ProfileScreen", Icons.Filled.Person)
+    object NewVoteScreen: Screens("NewVoteScreen")
 
 
 }

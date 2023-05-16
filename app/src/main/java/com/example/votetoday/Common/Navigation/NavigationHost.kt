@@ -14,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.votetoday.AppScreens.LoginAndRegistre.LoginScreen
 import com.example.votetoday.AppScreens.MainScreen.MainScreen
+import com.example.votetoday.AppScreens.NewVoteScreen.NewVoteScreen
 import com.example.votetoday.AppScreens.ProfileScreen.ProfileScreen
 import com.example.votetoday.Common.GestorBD.FBAuth
 import com.example.votetoday.Composables.LogOutPopUp
@@ -35,6 +36,9 @@ fun NavigationHost(navController: NavHostController, startDestination: String) {
         }
         composable(Screens.ProfileScreen.ruta) {
             ProfileScreen(navController = navController)
+        }
+        composable(Screens.NewVoteScreen.ruta) {
+            NewVoteScreen(navController = navController)
         }
     }
 }
@@ -59,17 +63,6 @@ class NavigationFunctions() {
             navController.navigate(destination) {
                 popUpTo(Screens.LoginScreen.ruta) {
                     inclusive = true
-                }
-            }
-        }
-
-        @Composable
-        fun NavigatePopLogOut(navController: NavController, destination: String) {
-            LaunchedEffect(Unit) {
-                navController.navigate(destination) {
-                    popUpTo(Screens.MainScreen.ruta) {
-                        inclusive = true
-                    }
                 }
             }
         }

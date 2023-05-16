@@ -4,9 +4,12 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -14,7 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -75,12 +80,28 @@ fun MainScreen(navController: NavController, viewModel: MainScreenViewModel = hi
                 modifier = Modifier
                     .padding(
                         start = widthPercentage(70),
-                        top = heightPercentage(25)
+                        top = heightPercentage(17)
                     )
                     .height(heightPercentage(90)),
                 horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                Text(text = "Temas recomendados", color = Color.Black)
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.post),
+                    tint=Color.White,
+                    contentDescription = "Crear una nueva votacion",
+                    modifier = Modifier
+                        .height(heightPercentage(9))
+                        .width(widthPercentage(18))
+                        .clip(CircleShape)
+                        .background(VoteTodayOrange)
+                        .padding(top = heightPercentage(1), bottom = heightPercentage(1))
+                        .clickable(onClick = { navController.navigate("NewVoteScreen") })
+                )
+                Text(
+                    text = "Temas recomendados:",
+                    color = Color.Black,
+                    modifier = Modifier.padding(top = heightPercentage(4))
+                )
             }
         }
     }

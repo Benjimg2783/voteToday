@@ -73,7 +73,7 @@ class FBAuth {
         ) {
 
             try {
-                FBUserQuerys.checkUserNameExists(uname) { exists ->
+                FBUserQuerys.checkUserNameNotExists(uname) { exists ->
                     Log.i("FBAuth", "onSignUp: ${exists}")
                     if (exists) {
 
@@ -87,7 +87,7 @@ class FBAuth {
                                         Toast.LENGTH_SHORT
                                     ).show()
                                     onLogIn(email, password, context, callback)
-                                    FBUserQuerys.insertUser(uname, email) { success ->
+                                    FBUserQuerys.insertUser(uname) { success ->
                                         if (success) {
                                             callback(true)
                                         } else {

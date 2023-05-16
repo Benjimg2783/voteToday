@@ -1,25 +1,24 @@
 package com.example.votetoday.Common.GestorBD
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.tasks.await
-import okhttp3.internal.wait
 
 class FBUserQuerys {
     companion object {
-        fun checkUserNameExists(
+        fun checkUserNameNotExists(
             Uname: String,
             callback: (Boolean) -> Unit
         ) {
-            Log.i("FBAuth", "checkUserNameExists: ${Uname}")
+            Log.i("FBAuth", "checkUserNameExists: $Uname")
             val db = FirebaseFirestore.getInstance()
             val usersCollection = db.collection("Usuario")
 
-            usersCollection.whereEqualTo("Uname", Uname)
+            usersCollection.whereEqualTo("uname", Uname)
                 .get()
                 .addOnSuccessListener { documents ->
                     if (documents.size() > 0) {
@@ -30,7 +29,7 @@ class FBUserQuerys {
                 }
         }
 
-        fun insertUser(uname: String, email: String, callback: (Boolean) -> Unit) {
+        fun insertUser(uname: String, callback: (Boolean) -> Unit) {
             val db = FirebaseFirestore.getInstance()
             val usersCollection = db.collection("Usuario")
             val uuid = FBAuth.getUserUID()
@@ -50,21 +49,26 @@ class FBUserQuerys {
 
         }
 
-        fun changeUserName(newName: String) {
+        fun changeUserName(newName: String,context:Context,callback: (Boolean) -> Unit) {
             val db = FirebaseFirestore.getInstance()
             val usersCollection = db.collection("Usuario")
             val uuid = FBAuth.getUserUID()
             try {
                 if (uuid != null) {
-                    usersCollection.document(uuid).update("Uname", newName)
-                }
-            } catch (e: Exception) {
-                Log.i("FBAuth", "changeUserName: ${e.message}")
-                insertUser(newName, FBAuth.getUserEmail()!!) { result ->
-                    if (result) {
-                        Log.i("FBAuth", "changeUserName: ${newName}")
+                    checkUserNameNotExists(newName) { enabled ->
+                        if (enabled) {
+                            Log.i("benec", "changeUserName: $newName")
+                            usersCollection.document(uuid).update("uname", newName)
+                            Toast.makeText(context, "Nombre de usuario cambiado correctamente", Toast.LENGTH_SHORT).show()
+                            callback(true)
+                        }else{
+                            Toast.makeText(context, "El nombre de usuario ya existe", Toast.LENGTH_SHORT).show()
+                            callback(false)
+                        }
                     }
                 }
+            } catch (e: Exception) {
+
             }
 
         }
@@ -73,7 +77,7 @@ class FBUserQuerys {
             val db = FirebaseFirestore.getInstance()
             val usersCollection = db.collection("Usuario")
             val uuid = FBAuth.getUserUID()
-            val user = ""
+
             if (uuid != null) {
                 Log.i("benec", "getUserName: $uuid")
                 usersCollection.document(uuid).get().addOnCompleteListener { usuario ->
@@ -85,5 +89,11 @@ class FBUserQuerys {
                 awaitClose{channel.close()}
             }
         }
+        fun setFotoPerfil(imagen: String, callback: (Boolean) -> Unit){
+            //TODO()
+        }
+
+
     }
 }
+

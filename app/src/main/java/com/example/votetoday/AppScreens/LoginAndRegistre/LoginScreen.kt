@@ -36,7 +36,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.votetoday.Common.DeviceConfiguration.Companion.heightPercentage
 import com.example.votetoday.Common.GestorBD.FBAuth
-import com.example.votetoday.Common.GestorBD.FBUserQuerys
 import com.example.votetoday.Common.GetDeviceConfiguration
 import com.example.votetoday.Common.Navigation.NavigationFunctions.Companion.NavigatePop
 import com.example.votetoday.Common.Navigation.Screens
