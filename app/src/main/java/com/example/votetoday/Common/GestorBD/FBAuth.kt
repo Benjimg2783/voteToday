@@ -74,7 +74,7 @@ class FBAuth {
 
             try {
                 FBUserQuerys.checkUserNameNotExists(uname) { exists ->
-                    Log.i("FBAuth", "onSignUp: ${exists}")
+                    Log.i("FBAuth", "onSignUp: $exists")
                     if (exists) {
 
                         FirebaseAuth.getInstance()

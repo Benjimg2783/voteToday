@@ -13,6 +13,7 @@ fun LogOutPopUp(
     onDismissRequest: () -> Unit,
     onConfirmButton: () -> Unit
 ) {
+    //Popup para confirmar el cerrado de sesion
     if (showDialog) {
         AlertDialog(
             onDismissRequest = onDismissRequest,

@@ -14,8 +14,6 @@ import javax.inject.Inject
 @OptIn(SavedStateHandleSaveableApi::class)
 class LoginAndRegistreViewModel @Inject constructor(savedStateHandle: SavedStateHandle) : ViewModel() {
 
-    var isLogging by savedStateHandle.saveable { mutableStateOf(true) }
-
     var email by savedStateHandle.saveable { mutableStateOf("") }
     var password by savedStateHandle.saveable { mutableStateOf("") }
     var repeatPassword by savedStateHandle.saveable { mutableStateOf("") }

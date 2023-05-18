@@ -285,8 +285,8 @@ fun UserNameTextField(text: String, onValueChange: (String) -> Unit) {
                 )
             },
             onValueChange = onValueChange,
-            label = { Text(text = "Introduce un nombre de usuario", color = Color.Black) },
-            placeholder = { Text(text = "Introduce un nombre de usuario", color = Color.Black) }
+            label = { Text(text = "Nombre de usuario", color = Color.Black) },
+            placeholder = { Text(text = "Nombre de usuario", color = Color.Black) }
         )
     }
 }

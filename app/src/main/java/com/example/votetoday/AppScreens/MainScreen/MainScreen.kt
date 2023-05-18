@@ -59,6 +59,7 @@ fun MainScreen(navController: NavController, viewModel: MainScreenViewModel = hi
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
+                //Logo
                 Image(
                     painter = painterResource(id = R.drawable.logonobackground),
                     contentDescription = "Logo",
@@ -67,6 +68,7 @@ fun MainScreen(navController: NavController, viewModel: MainScreenViewModel = hi
                         .clip(RoundedCornerShape(5))
                 )
             }
+            //Columna de votaciones
             LazyColumn(
                 modifier = Modifier
                     .width(widthPercentage(67))
@@ -85,6 +87,7 @@ fun MainScreen(navController: NavController, viewModel: MainScreenViewModel = hi
                     .height(heightPercentage(90)),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                //Boton de crear votacion
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.post),
                     tint=Color.White,
@@ -97,6 +100,7 @@ fun MainScreen(navController: NavController, viewModel: MainScreenViewModel = hi
                         .padding(top = heightPercentage(1), bottom = heightPercentage(1))
                         .clickable(onClick = { navController.navigate("NewVoteScreen") })
                 )
+                //Lista de temas recomendados
                 Text(
                     text = "Temas recomendados:",
                     color = Color.Black,
