@@ -10,6 +10,7 @@ import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -41,7 +42,7 @@ class FBUserQuerys {
             val uuid = FBAuth.getUserUID()
             val user = Usuario(uname)
             if (uuid != null) {
-                Log.i("FBAuth", "insertUser: ${uuid}")
+                Log.i("FBAuth", "insertUser: $uuid")
                 usersCollection.document(uuid).set(user)
                     .addOnSuccessListener {
                         callback(true)
@@ -105,11 +106,14 @@ class FBUserQuerys {
         }
 
         fun setFotoPerfil(fotoPerfil: File?, context: Context) {
-            val db = Firebase.storage.reference.child("users")
+            val db = Firebase.storage.reference.child("porfileimages")
             if (Firebase.auth.uid != null) {
-                fotoPerfil?.let {
-                    db.child("${Firebase.auth.uid}/fotoPefil.png").putBytes(it.readBytes())
+                fotoPerfil?.let { foto ->
+                    db.child("${Firebase.auth.uid}/fotoPefil.png").putBytes(foto.readBytes())
                         .addOnSuccessListener {
+                            suspend {
+                                setUserFotoUrl(it.storage.downloadUrl.await().toString())
+                            }
                             Toast.makeText(
                                 context,
                                 "Foto de perfil cambiada correctamente",
@@ -119,7 +123,7 @@ class FBUserQuerys {
                         .addOnFailureListener {
                             Toast.makeText(
                                 context,
-                                "Error al cambiar la foto de perfil $it.",
+                                "Error al cambiar la foto de perfil ${it.message}.",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -129,8 +133,16 @@ class FBUserQuerys {
                 Toast.makeText(context, "Error de conexion", Toast.LENGTH_SHORT).show()
             }
         }
-        suspend fun getFotoPerfil(uid: String): String? = suspendCoroutine { c ->
-            val pfp = Firebase.storage.reference.child("users/${uid}/fotoPefil.png")
+        private fun setUserFotoUrl(url: String){
+            val db = FirebaseFirestore.getInstance()
+            val usersCollection = db.collection("Usuario")
+            val uuid = FBAuth.getUserUID()
+            if (uuid != null) {
+                usersCollection.document(uuid).update("fotoPerfil", url)
+            }
+        }
+        suspend fun getFotoPerfil(uid: String?,context: Context): String? = suspendCoroutine { c ->
+            val pfp = Firebase.storage.reference.child("porfileimages/${uid}/fotoPefil.png")
             if (Firebase.auth.uid != null) {
 
                 pfp.downloadUrl
@@ -139,10 +151,10 @@ class FBUserQuerys {
                     }
                     .addOnFailureListener { e ->
                         Log.w("User", "No hay PFP", e)
-                        c.resume(null)
+                        c.resume("")
                     }
 
-            } else Log.e("User", "Error en la sesión")
+            } else Toast.makeText(context, "Error de conexion", Toast.LENGTH_SHORT).show()
         }
     }
 

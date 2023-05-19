@@ -48,12 +48,6 @@ class NavigationFunctions() {
         var changeScreen = mutableStateOf(false)
         var screenID = mutableStateOf(0)
 
-        fun changeScreen(screenID: Int) {
-            if (screenID != -1) {
-                this.screenID.value = screenID
-            }
-            changeScreen.value = !changeScreen.value
-        }
         //endregion
 
         //region NavigationPOP

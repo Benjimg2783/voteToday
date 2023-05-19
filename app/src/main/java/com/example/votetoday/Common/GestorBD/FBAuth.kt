@@ -155,10 +155,6 @@ class FBAuth {
         }
         //endregion
 
-        fun getUserEmail(): String? {
-            return Firebase.auth.currentUser?.email
-        }
-
         fun getUserUID(): String? {
             return Firebase.auth.currentUser?.uid
         }
