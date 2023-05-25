@@ -8,7 +8,7 @@ import androidx.lifecycle.viewmodel.compose.saveable
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 @HiltViewModel
+@OptIn(SavedStateHandleSaveableApi::class)
 class NavigationHostViewModel @Inject constructor(savedStateHandle: SavedStateHandle) : ViewModel() {
-    @OptIn(SavedStateHandleSaveableApi::class)
     var dialogState by savedStateHandle.saveable { mutableStateOf(false) }
 }

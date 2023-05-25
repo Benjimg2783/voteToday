@@ -5,10 +5,11 @@ import com.google.firebase.firestore.DocumentSnapshot
 
 data class Votacion(
     val idUsuario: String = FirebaseAuth.getInstance().currentUser!!.uid,
-    val asunto:String,
-    val descripcion:String,
-    val temas:List<String>,
-    val Respuestas:List<String>
+    val asunto: String,
+    val descripcion: String? = null,
+    val temas: List<String>,
+    val respuestas: List<String>,
+    val votantes: List<String>? = null
 )
 data class Usuario(
     val uname:String,
@@ -23,5 +24,6 @@ data class Usuario(
 
             return Usuario(uname,votaciones,fotoPerfil)
         }
+
     }
 }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.OutlinedTextField
@@ -30,9 +31,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -46,6 +49,7 @@ import com.example.votetoday.Common.Navigation.NavigationFunctions
 import com.example.votetoday.Common.SystemBarColor
 import com.example.votetoday.Common.saveBitmapToFile
 import com.example.votetoday.Composables.ImagePopUp
+import com.example.votetoday.R
 import com.example.votetoday.ui.theme.VoteTodayBackground
 import com.example.votetoday.ui.theme.VoteTodayOrange
 
@@ -70,7 +74,7 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
         bottomBar = { NavigationFunctions.NavBar(navController = navController as NavHostController) }
     ) {
         viewModel.updatePfp(context)
-        //region Foto de perfil
+        //region foto de perfil
         var imagenBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
         SystemBarColor(color = VoteTodayOrange)
         Box(
@@ -120,14 +124,14 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
 
 
                     }
-
                 //endregion
+
                 //region Nombre de usuario
                 OutlinedTextField(
                     value = viewModel.uName,
-                    onValueChange = {
-                        viewModel.onUnameChange(it)
-                        viewModel.uName = it
+                    onValueChange = { newUName ->
+                        viewModel.onUnameChange(newUName)
+                        viewModel.uName = newUName
                     },
                     trailingIcon = {
                         IconButton(onClick = {
@@ -135,25 +139,42 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
                                 FBUserQuerys.changeUserName(
                                     viewModel.uName,
                                     context
-                                ) { nameChanged ->
-                                    if (nameChanged) {
+                                ) {
                                         viewModel.textFieldEnabled = false
-                                    }
                                 }
                             } else {
                                 viewModel.textFieldEnabled = true
                             }
-                        }) {
+                        }
+                            ) {
                             Icon(
-                                painter = painterResource(viewModel.icon),
+                                painter = painterResource(if (!viewModel.textFieldEnabled) {
+                                    R.drawable.edit
+                                } else {
+                                    R.drawable.done
+                                }),
                                 tint = Color.Unspecified,
                                 contentDescription = "Edit icon",
                                 modifier = Modifier.size(heightPercentage(4))
                             )
                         }
                     },
+                    enabled = viewModel.textFieldEnabled,
                     readOnly = !viewModel.textFieldEnabled,
                     singleLine = true,
+                    keyboardOptions = KeyboardOptions(autoCorrect = false, keyboardType = KeyboardType.Text),
+                    colors = androidx.compose.material.TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.Transparent,
+                        focusedIndicatorColor = Black,
+                        unfocusedIndicatorColor = Black,
+                        disabledIndicatorColor = Black,
+                        errorIndicatorColor = Color.Transparent,
+                        disabledTextColor = Black,
+                        focusedLabelColor = Color.Transparent,
+                        unfocusedLabelColor = Color.Transparent,
+                        errorLabelColor = Color.Transparent,
+                        cursorColor = Color.Black
+                    ),
                 )
                 //endregion
 

@@ -109,6 +109,7 @@ fun ImageSelectionComponent(onImageSelected: (ImageBitmap) -> Unit) {
                 }
             }
         }
+    //q haces tu )
 
     Column {
         Button(

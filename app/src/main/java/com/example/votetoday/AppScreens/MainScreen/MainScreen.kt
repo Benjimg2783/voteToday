@@ -102,7 +102,7 @@ fun MainScreen(navController: NavController, viewModel: MainScreenViewModel = hi
                 )
                 //Lista de temas recomendados
                 Text(
-                    text = "Temas recomendados:",
+                    text = "Temas recomendados",
                     color = Color.Black,
                     modifier = Modifier.padding(top = heightPercentage(4))
                 )

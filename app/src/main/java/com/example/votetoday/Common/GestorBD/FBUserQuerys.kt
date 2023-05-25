@@ -15,8 +15,8 @@ import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class FBUserQuerys {
-    companion object {
+object FBUserQuerys {
+
         fun checkUserNameNotExists(
             Uname: String,
             callback: (Boolean) -> Unit
@@ -156,7 +156,7 @@ class FBUserQuerys {
 
             } else Toast.makeText(context, "Error de conexion", Toast.LENGTH_SHORT).show()
         }
-    }
+
 
 }
 

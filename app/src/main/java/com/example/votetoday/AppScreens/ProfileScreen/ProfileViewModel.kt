@@ -11,34 +11,20 @@ import androidx.lifecycle.viewmodel.compose.saveable
 import com.example.votetoday.Common.GestorBD.FBAuth
 import com.example.votetoday.Common.GestorBD.FBUserQuerys
 import com.example.votetoday.R
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(SavedStateHandleSaveableApi::class)
+@HiltViewModel
 class ProfileViewModel @Inject constructor(savedStateHandle: SavedStateHandle) : ViewModel() {
 
-    @OptIn(SavedStateHandleSaveableApi::class)
     var uName by savedStateHandle.saveable { mutableStateOf(null ?: "") }
-
-    @OptIn(SavedStateHandleSaveableApi::class)
     var textFieldEnabled by savedStateHandle.saveable { mutableStateOf(false) }
-
-    @OptIn(SavedStateHandleSaveableApi::class)
     var dialogState by savedStateHandle.saveable { mutableStateOf(false) }
-
-    @OptIn(SavedStateHandleSaveableApi::class)
     var galeryState by savedStateHandle.saveable { mutableStateOf(false) }
-
-    @OptIn(SavedStateHandleSaveableApi::class)
     var fotoPerfilUrL by savedStateHandle.saveable { mutableStateOf("") }
-
-    @OptIn(SavedStateHandleSaveableApi::class)
     var refresh by savedStateHandle.saveable { mutableStateOf(false) }
-
-    var icon = if (!textFieldEnabled) {
-        R.drawable.edit
-    } else {
-        R.drawable.done
-    }
     var fotoPerfilDefault = R.drawable.foto_perfil_default
 
 
