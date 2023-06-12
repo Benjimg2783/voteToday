@@ -10,8 +10,12 @@ import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import com.example.votetoday.Common.GestorBD.FBAuth
 import com.example.votetoday.Common.GestorBD.FBUserQuerys
+import com.example.votetoday.Common.GestorBD.FBVotacion
+import com.example.votetoday.Common.GestorBD.Votacion
 import com.example.votetoday.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -47,4 +51,11 @@ class ProfileViewModel @Inject constructor(savedStateHandle: SavedStateHandle) :
         }
 
     }
+    fun updateVotaciones(): Flow<MutableList<Votacion>> = flow{
+        FBVotacion.getVotacionesPropias().collect{
+            Log.i("updateView", it.toString())
+            emit(it)
+        }
+    }
 }
+

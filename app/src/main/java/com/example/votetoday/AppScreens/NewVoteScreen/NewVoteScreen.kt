@@ -1,6 +1,7 @@
 package com.example.votetoday.AppScreens.NewVoteScreen
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +24,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -34,7 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.VectorPainter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -63,6 +63,7 @@ fun NewVoteScreen(
     navController: NavController,
     viewModel: NewVoteScreenViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             TopBar(navController = navController)
@@ -104,7 +105,7 @@ fun NewVoteScreen(
                                     text = viewModel.respuesta,
                                     onValueChange = viewModel::onRespuestaChange
                                 ) {
-                                    viewModel.respuestas.add(viewModel.respuesta)
+                                    if (viewModel.respuesta.isNotBlank())viewModel.respuestas.add(viewModel.respuesta) else Toast.makeText(context, "No se puede añadir una respuesta vacía", Toast.LENGTH_SHORT).show()
                                     viewModel.respuesta = ""
                                 }
 
@@ -151,16 +152,72 @@ fun NewVoteScreen(
                                     text = viewModel.tema,
                                     onValueChange = viewModel::onTemaChange
                                 ) {
-                                    viewModel.temas.add(viewModel.tema)
+                                    if (viewModel.tema.isNotBlank())viewModel.temas.add(viewModel.tema) else Toast.makeText(context, "No se puede añadir un tema vacía", Toast.LENGTH_SHORT).show()
                                     viewModel.tema = ""
                                 }
                             }
-                            SubmitButton(
-                                asunto = viewModel.asunto,
-                                descripcion = viewModel.descripcion,
-                                respuestas = viewModel.respuestas,
-                                temas = viewModel.temas
-                            )
+                            Column {
+                                viewModel.temas.forEach { tema ->
+                                    OutlinedTextField(
+                                        value = tema, onValueChange = {},
+                                        readOnly = true,
+                                        enabled = false,
+                                        modifier = Modifier
+                                            .padding(
+                                                start = widthPercentage(7),
+                                                top = heightPercentage(1),
+                                                bottom = heightPercentage(1),
+                                                end = widthPercentage(7)
+                                            )
+                                            .offset(x = widthPercentage(-1))
+                                            .height(heightPercentage(6)),
+                                        trailingIcon = {
+                                            IconButton(onClick = {
+                                                viewModel.tema += " "
+                                                viewModel.temas.remove(tema)
+                                                viewModel.tema = viewModel.tema.removeSuffix(" ")
+                                            },
+                                                modifier = Modifier
+                                                    .width(widthPercentage(5))
+                                            ){
+                                                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.remove), contentDescription = "Remove", tint = Color.Red)
+                                            }
+                                        },
+                                        colors = TextFieldDefaults.textFieldColors(
+                                            backgroundColor = Color.LightGray,
+                                            focusedIndicatorColor = Color.Transparent,
+                                            unfocusedIndicatorColor = Color.Transparent,
+                                            disabledIndicatorColor = Color.Transparent
+                                        ),
+                                        textStyle = TextStyle(fontSize = 10.sp)
+                                    )
+                                }
+                            }
+                            SubmitButton{
+                                if (viewModel.asunto.isEmpty()  || viewModel.respuestas.isEmpty() || viewModel.temas.isEmpty()) {
+                                    Toast.makeText(
+                                        context,
+                                        "Los campos asunto , respuestas y temas no pueden estar vacios",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }else{
+                                    val recuento = mutableListOf<Int>()
+                                    for (respuesta in viewModel.respuestas.indices){
+                                        recuento.add(0)
+                                    }
+                                    FBVotacion.createVotacion(
+                                        Votacion(
+                                            asunto = viewModel.asunto,
+                                            descripcion = viewModel.descripcion,
+                                            respuestas = viewModel.respuestas,
+                                            recuento = recuento,
+                                            temas = viewModel.temas
+                                        )
+                                    )
+                                    Toast.makeText(context, "Votacion creada con éxito", Toast.LENGTH_SHORT).show()
+                                    navController.popBackStack()
+                                }
+                            }
                         }
 
                     }
@@ -339,10 +396,7 @@ fun TemaTextField(text: String, onValueChange: (String) -> Unit, onclick: () -> 
 //region submitButton
 @Composable
 fun SubmitButton(
-    asunto: String,
-    descripcion: String,
-    respuestas: List<String>,
-    temas: List<String>
+    onClick: () -> Unit
 ) {
     Column(
         modifier = Modifier.padding(start = heightPercentage(2), end = heightPercentage(2), bottom = heightPercentage(2)),
@@ -350,16 +404,8 @@ fun SubmitButton(
         horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Bottom
     ) {
         Button(
-            onClick = {
-                FBVotacion.createVotacion(
-                    Votacion(
-                        asunto = asunto,
-                        descripcion = descripcion,
-                        respuestas = respuestas,
-                        temas = temas
-                    )
-                )
-            },
+            onClick = { onClick() }
+            ,
             modifier = Modifier
                 .height(heightPercentage(9))
                 .fillMaxWidth()

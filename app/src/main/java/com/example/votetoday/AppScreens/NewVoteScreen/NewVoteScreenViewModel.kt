@@ -17,7 +17,6 @@ class NewVoteScreenViewModel @Inject constructor(savedStateHandle: SavedStateHan
     var descripcion by savedStateHandle.saveable { mutableStateOf("") }
     var respuesta by savedStateHandle.saveable { mutableStateOf("") }
     var respuestas by savedStateHandle.saveable { mutableStateOf(mutableListOf<String>()) }
-    var rf by savedStateHandle.saveable { mutableStateOf(false) }
     var tema by savedStateHandle.saveable { mutableStateOf("") }
     var temas by savedStateHandle.saveable { mutableStateOf(mutableListOf<String>()) }
 
@@ -32,5 +31,13 @@ class NewVoteScreenViewModel @Inject constructor(savedStateHandle: SavedStateHan
     }
     fun onTemaChange(newTema: String) {
         this.tema= newTema
+    }
+    fun limpiarTodo(){
+        this.asunto=""
+        this.descripcion=""
+        this.respuesta=""
+        this.respuestas= mutableListOf<String>()
+        this.tema=""
+        this.temas= mutableListOf<String>()
     }
 }

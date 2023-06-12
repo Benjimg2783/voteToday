@@ -1,17 +1,24 @@
 package com.example.votetoday.AppScreens.MainScreen
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,13 +27,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.votetoday.Common.DeviceConfiguration.Companion.heightPercentage
 import com.example.votetoday.Common.DeviceConfiguration.Companion.widthPercentage
+import com.example.votetoday.Common.GestorBD.FBAuth
+import com.example.votetoday.Common.GestorBD.FBVotacion.sumarRespuesta
+import com.example.votetoday.Common.GestorBD.Votacion
 import com.example.votetoday.Common.Navigation.NavigationFunctions.Companion.NavBar
 import com.example.votetoday.Common.SystemBarColor
 import com.example.votetoday.R
@@ -42,9 +54,10 @@ fun PreviewMainScreen() {
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MainScreen(navController: NavController, viewModel: MainScreenViewModel = hiltViewModel()) {
-    Scaffold(
-        bottomBar = { NavBar(navController = navController as NavHostController) }
-    ) {
+
+    val votaciones by viewModel.updateVotaciones().collectAsState(null)
+
+    Scaffold(bottomBar = { NavBar(navController = navController as NavHostController) }) {
         SystemBarColor(color = VoteTodayOrange)
         Box(
             modifier = Modifier
@@ -71,42 +84,164 @@ fun MainScreen(navController: NavController, viewModel: MainScreenViewModel = hi
             //Columna de votaciones
             LazyColumn(
                 modifier = Modifier
-                    .width(widthPercentage(67))
-                    .height(heightPercentage(90))
-                    .padding(top = heightPercentage(15), start = widthPercentage(5))
-                    .background(Color.White, shape = RoundedCornerShape(5)),
+                    .fillMaxSize()
+                    .padding(top = heightPercentage(15), bottom = heightPercentage(7))
+                    .background(Color.White)
             ) {
+                //Lista de votaciones
 
+                if (viewModel.refreshing){
+
+                }
+                else {
+                    items(votaciones?.size ?: 0) { votacion ->
+                        MostrarVotacion(votacion = votaciones!![votacion], viewModel = viewModel)
+                    }
+                }
             }
+            // region FloationgActionButton
+            // Boton de crear votacion
+            FloatingActionButton(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = heightPercentage(10), end = widthPercentage(8))
+                    .size(heightPercentage(9))
+                    .border(1.dp, Color.White, CircleShape),
+                onClick = {
+                    navController.navigate("NewVoteScreen")
+                }, shape = CircleShape, backgroundColor = VoteTodayOrange
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.post),
+                    tint = Color.White,
+                    contentDescription = "Crear una nueva votacion"
+                )
+            }
+            // endregion
+        }
+    }
+}
+
+@Composable
+fun MostrarVotacion(votacion: Votacion, viewModel: MainScreenViewModel) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                top = heightPercentage(2),
+                bottom = heightPercentage(2),
+                start = widthPercentage(5),
+                end = widthPercentage(5)
+            )
+            .background(Color.White),
+        //TODO() .clickable { },
+        elevation = 10.dp,
+    ) {
+        Column {
+            // region Titulo
+            Text(
+                text = votacion.asunto,
+                modifier = Modifier
+                    .padding(
+                        top = heightPercentage(3),
+                        bottom = heightPercentage(2),
+                        start = widthPercentage(4),
+                        end = widthPercentage(2)
+                    ),
+                color = Color.Black
+            )
+
+            // endregion
+            // region Descripcion
+            if (!votacion.descripcion.isNullOrBlank()){
+                Text(
+                    text = votacion.descripcion,
+                    modifier = Modifier
+                        .padding(
+                            top = heightPercentage(1),
+                            bottom = heightPercentage(2),
+                            start = widthPercentage(4),
+                            end = widthPercentage(2)
+                        ),
+                    color = Color.Black
+                )
+            }
+            // endregion
+            // region Respuestas
             Column(
                 modifier = Modifier
                     .padding(
-                        start = widthPercentage(70),
-                        top = heightPercentage(17)
-                    )
-                    .height(heightPercentage(90)),
-                horizontalAlignment = Alignment.CenterHorizontally
+                        top = heightPercentage(2),
+                        bottom = heightPercentage(2),
+                        start = widthPercentage(4),
+                        end = widthPercentage(2)
+                    ),
+                verticalArrangement = Arrangement.SpaceEvenly
             ) {
-                //Boton de crear votacion
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.post),
-                    tint=Color.White,
-                    contentDescription = "Crear una nueva votacion",
-                    modifier = Modifier
-                        .height(heightPercentage(9))
-                        .width(widthPercentage(18))
-                        .clip(CircleShape)
-                        .background(VoteTodayOrange)
-                        .padding(top = heightPercentage(1), bottom = heightPercentage(1))
-                        .clickable(onClick = { navController.navigate("NewVoteScreen") })
-                )
-                //Lista de temas recomendados
-                Text(
-                    text = "Temas recomendados",
-                    color = Color.Black,
-                    modifier = Modifier.padding(top = heightPercentage(4))
-                )
+                if (votacion.votantes.isNullOrEmpty() || !votacion.votantes!!.contains(FBAuth.getUserUID())) {
+                    votacion.respuestas.forEach { respuesta ->
+                        Button(
+                            onClick = {
+                                votacion.recuento[votacion.respuestas.indexOf(respuesta)] += 1
+                                if (!votacion.votantes.isNullOrEmpty()) {
+                                    viewModel.votantes = votacion.votantes!!
+                                }
+                                FBAuth.getUserUID()?.let { viewModel.votantes.add(it) }
+                                votacion.votantes = viewModel.votantes
+                                sumarRespuesta(votacion)
+                                viewModel.refresh = !viewModel.refresh
+                                //ponme un log
+                                Log.i("refresh", viewModel.refresh.toString())
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = VoteTodayOrange
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    bottom = heightPercentage(2)
+                                )
+                                .height(heightPercentage(10)),
+                        ) {
+                            Text(
+                                text = respuesta,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        top = heightPercentage(2),
+                                        bottom = heightPercentage(4),
+                                        start = widthPercentage(4),
+                                        end = widthPercentage(2)
+                                    ),
+                                color = Color.White,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                } else {
+                    Row {
+
+
+                        Text(
+                            text = "Voto registrado con éxito",
+                            modifier = Modifier
+                                .padding(
+                                    top = heightPercentage(0),
+                                    bottom = heightPercentage(2),
+                                    start = widthPercentage(2),
+                                    end = widthPercentage(1)
+                                ),
+                            color = Color(0xFF8BC34A)
+                        )
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = "Voto registrado con éxito",
+                            tint = Color(0xFF8BC34A)
+                        )
+                    }
+                }
             }
+            // endregion
         }
     }
 }

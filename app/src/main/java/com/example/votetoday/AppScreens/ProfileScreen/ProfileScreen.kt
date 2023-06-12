@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,12 +18,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,7 +40,9 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -45,6 +51,7 @@ import coil.compose.AsyncImage
 import com.example.votetoday.Common.DeviceConfiguration.Companion.heightPercentage
 import com.example.votetoday.Common.DeviceConfiguration.Companion.widthPercentage
 import com.example.votetoday.Common.GestorBD.FBUserQuerys
+import com.example.votetoday.Common.GestorBD.Votacion
 import com.example.votetoday.Common.Navigation.NavigationFunctions
 import com.example.votetoday.Common.SystemBarColor
 import com.example.votetoday.Common.saveBitmapToFile
@@ -64,6 +71,7 @@ fun PreviewProfile() {
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
 fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hiltViewModel()) {
+    val votaciones by viewModel.updateVotaciones().collectAsState(null)
     LaunchedEffect(Unit) {
         viewModel.updateUname()
     }
@@ -173,7 +181,7 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
                         focusedLabelColor = Color.Transparent,
                         unfocusedLabelColor = Color.Transparent,
                         errorLabelColor = Color.Transparent,
-                        cursorColor = Color.Black
+                        cursorColor = Black
                     ),
                 )
                 //endregion
@@ -183,18 +191,98 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
             //region Lista de votaciones
             LazyColumn(
                 modifier = Modifier.run {
-                    width(widthPercentage(92))
+                    fillMaxWidth()
                         .height(heightPercentage(93))
                         .padding(
-                            top = heightPercentage(20),
-                            start = widthPercentage(8)
+                            top = heightPercentage(20)
                         )
-                        .background(Color.White, RoundedCornerShape(5))
+                        .background(Color.White)
                 }
             ) {
-
+                items(votaciones?.size ?: 0) { votacion ->
+                    MostrarVotacion(
+                        votacion = votaciones!![votacion]
+                    )
+                }
             }
             //endregion
+        }
+    }
+}
+@Composable
+fun MostrarVotacion(votacion: Votacion) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                top = heightPercentage(2),
+                bottom = heightPercentage(2),
+                start = widthPercentage(5),
+                end = widthPercentage(5)
+            )
+            .background(Color.White),
+        //TODO() .clickable { },
+        elevation = 10.dp,
+    ) {
+        Column {
+            // region Titulo
+            Text(
+                text = votacion.asunto,
+                modifier = Modifier
+                    .padding(
+                        top = heightPercentage(3),
+                        bottom = heightPercentage(2),
+                        start = widthPercentage(4),
+                        end = widthPercentage(2)
+                    ),
+                color = Black
+            )
+
+            // endregion
+            // region Descripcion
+            if (!votacion.descripcion.isNullOrBlank()){
+                Text(
+                    text = votacion.descripcion,
+                    modifier = Modifier
+                        .padding(
+                            top = heightPercentage(1),
+                            bottom = heightPercentage(2),
+                            start = widthPercentage(4),
+                            end = widthPercentage(2)
+                        ),
+                    color = Black
+                )
+            }
+            // endregion
+            // region Respuestas
+            Column(
+                modifier = Modifier
+                    .padding(
+                        top = heightPercentage(2),
+                        bottom = heightPercentage(2),
+                        start = widthPercentage(4),
+                        end = widthPercentage(2)
+                    ),
+                verticalArrangement = Arrangement.SpaceEvenly
+            ) {
+                    votacion.respuestas.forEachIndexed { index,respuesta ->
+
+                        Text(
+                            text = respuesta + ": " + votacion.recuento[index],
+                            modifier = Modifier
+                                .padding(
+                                    top = heightPercentage(1),
+                                    bottom = heightPercentage(1),
+                                    start = widthPercentage(4),
+                                    end = widthPercentage(2)
+                                ),
+                            color = VoteTodayOrange,
+                            textAlign = TextAlign.Center
+                        )
+
+                }
+            }
+            // endregion
         }
     }
 }
