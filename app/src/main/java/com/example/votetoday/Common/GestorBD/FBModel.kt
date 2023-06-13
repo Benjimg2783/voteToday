@@ -1,6 +1,5 @@
 package com.example.votetoday.Common.GestorBD
 
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import java.util.Date

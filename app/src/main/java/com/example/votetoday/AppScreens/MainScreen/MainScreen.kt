@@ -1,24 +1,30 @@
 package com.example.votetoday.AppScreens.MainScreen
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +50,7 @@ import com.example.votetoday.Common.SystemBarColor
 import com.example.votetoday.R
 import com.example.votetoday.ui.theme.VoteTodayBackground
 import com.example.votetoday.ui.theme.VoteTodayOrange
+import kotlinx.coroutines.flow.collect
 
 @Preview
 @Composable
@@ -51,11 +58,14 @@ fun PreviewMainScreen() {
     MainScreen(navController = rememberNavController())
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MainScreen(navController: NavController, viewModel: MainScreenViewModel = hiltViewModel()) {
 
-    val votaciones by viewModel.updateVotaciones().collectAsState(null)
+    //si pulsas el boton despues de subir una votacion no te sale hasta que no te sales de la pagina. un sec
+    viewModel.refreshing = true
+    viewModel.updateVotaciones()
 
     Scaffold(bottomBar = { NavBar(navController = navController as NavHostController) }) {
         SystemBarColor(color = VoteTodayOrange)
@@ -73,13 +83,15 @@ fun MainScreen(navController: NavController, viewModel: MainScreenViewModel = hi
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 //Logo
-                Image(
-                    painter = painterResource(id = R.drawable.logonobackground),
+                Image(painter = painterResource(id = R.drawable.logonobackground),
                     contentDescription = "Logo",
                     modifier = Modifier
                         .height(heightPercentage(10))
                         .clip(RoundedCornerShape(5))
-                )
+                        .clickable {
+                            viewModel.refreshing = true
+                            viewModel.updateVotaciones()
+                        })
             }
             //Columna de votaciones
             LazyColumn(
@@ -88,17 +100,33 @@ fun MainScreen(navController: NavController, viewModel: MainScreenViewModel = hi
                     .padding(top = heightPercentage(15), bottom = heightPercentage(7))
                     .background(Color.White)
             ) {
+                item {
+                    //refrescar la pagina al tirar hacia abajo
+                    }
+
                 //Lista de votaciones
-
-                if (viewModel.refreshing){
-
-                }
-                else {
-                    items(votaciones?.size ?: 0) { votacion ->
-                        MostrarVotacion(votacion = votaciones!![votacion], viewModel = viewModel)
+                if (viewModel.refreshing) {
+                    item {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            CircularProgressIndicator(
+                                color = VoteTodayOrange,
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .size(widthPercentage(13))
+                                    .padding(top = heightPercentage(3))
+                            )
+                        }
+                    }
+                } else {
+                    items(viewModel.votaciones.size) { votacion ->
+                        MostrarVotacion(
+                            votacion = viewModel.votaciones[votacion], viewModel = viewModel
+                        )
                     }
                 }
+
             }
+
             // region FloationgActionButton
             // Boton de crear votacion
             FloatingActionButton(
@@ -106,8 +134,7 @@ fun MainScreen(navController: NavController, viewModel: MainScreenViewModel = hi
                     .align(Alignment.BottomEnd)
                     .padding(bottom = heightPercentage(10), end = widthPercentage(8))
                     .size(heightPercentage(9))
-                    .border(1.dp, Color.White, CircleShape),
-                onClick = {
+                    .border(1.dp, Color.White, CircleShape), onClick = {
                     navController.navigate("NewVoteScreen")
                 }, shape = CircleShape, backgroundColor = VoteTodayOrange
             ) {
@@ -140,43 +167,35 @@ fun MostrarVotacion(votacion: Votacion, viewModel: MainScreenViewModel) {
         Column {
             // region Titulo
             Text(
-                text = votacion.asunto,
-                modifier = Modifier
-                    .padding(
-                        top = heightPercentage(3),
-                        bottom = heightPercentage(2),
-                        start = widthPercentage(4),
-                        end = widthPercentage(2)
-                    ),
-                color = Color.Black
+                text = votacion.asunto, modifier = Modifier.padding(
+                    top = heightPercentage(3),
+                    bottom = heightPercentage(2),
+                    start = widthPercentage(4),
+                    end = widthPercentage(2)
+                ), color = Color.Black
             )
 
             // endregion
             // region Descripcion
-            if (!votacion.descripcion.isNullOrBlank()){
+            if (!votacion.descripcion.isNullOrBlank()) {
                 Text(
-                    text = votacion.descripcion,
-                    modifier = Modifier
-                        .padding(
-                            top = heightPercentage(1),
-                            bottom = heightPercentage(2),
-                            start = widthPercentage(4),
-                            end = widthPercentage(2)
-                        ),
-                    color = Color.Black
+                    text = votacion.descripcion, modifier = Modifier.padding(
+                        top = heightPercentage(1),
+                        bottom = heightPercentage(2),
+                        start = widthPercentage(4),
+                        end = widthPercentage(2)
+                    ), color = Color.Black
                 )
             }
             // endregion
             // region Respuestas
             Column(
-                modifier = Modifier
-                    .padding(
-                        top = heightPercentage(2),
-                        bottom = heightPercentage(2),
-                        start = widthPercentage(4),
-                        end = widthPercentage(2)
-                    ),
-                verticalArrangement = Arrangement.SpaceEvenly
+                modifier = Modifier.padding(
+                    top = heightPercentage(2),
+                    bottom = heightPercentage(2),
+                    start = widthPercentage(4),
+                    end = widthPercentage(2)
+                ), verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 if (votacion.votantes.isNullOrEmpty() || !votacion.votantes!!.contains(FBAuth.getUserUID())) {
                     votacion.respuestas.forEach { respuesta ->
@@ -189,9 +208,10 @@ fun MostrarVotacion(votacion: Votacion, viewModel: MainScreenViewModel) {
                                 FBAuth.getUserUID()?.let { viewModel.votantes.add(it) }
                                 votacion.votantes = viewModel.votantes
                                 sumarRespuesta(votacion)
-                                viewModel.refresh = !viewModel.refresh
-                                //ponme un log
-                                Log.i("refresh", viewModel.refresh.toString())
+                                viewModel.refreshing = true
+                                viewModel.updateVotaciones()
+
+                                // pero se actualiza sola no? una vez q hagas el refresh de la pantalla se vuelve a ejecutar la pagina
                             },
                             colors = ButtonDefaults.buttonColors(
                                 backgroundColor = VoteTodayOrange
@@ -204,17 +224,14 @@ fun MostrarVotacion(votacion: Votacion, viewModel: MainScreenViewModel) {
                                 .height(heightPercentage(10)),
                         ) {
                             Text(
-                                text = respuesta,
-                                modifier = Modifier
+                                text = respuesta, modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(
                                         top = heightPercentage(2),
                                         bottom = heightPercentage(4),
                                         start = widthPercentage(4),
                                         end = widthPercentage(2)
-                                    ),
-                                color = Color.White,
-                                textAlign = TextAlign.Center
+                                    ), color = Color.White, textAlign = TextAlign.Center
                             )
                         }
                     }
@@ -223,15 +240,12 @@ fun MostrarVotacion(votacion: Votacion, viewModel: MainScreenViewModel) {
 
 
                         Text(
-                            text = "Voto registrado con éxito",
-                            modifier = Modifier
-                                .padding(
-                                    top = heightPercentage(0),
-                                    bottom = heightPercentage(2),
-                                    start = widthPercentage(2),
-                                    end = widthPercentage(1)
-                                ),
-                            color = Color(0xFF8BC34A)
+                            text = "Voto registrado con éxito", modifier = Modifier.padding(
+                                top = heightPercentage(0),
+                                bottom = heightPercentage(2),
+                                start = widthPercentage(2),
+                                end = widthPercentage(1)
+                            ), color = Color(0xFF8BC34A)
                         )
                         Icon(
                             imageVector = Icons.Filled.Check,

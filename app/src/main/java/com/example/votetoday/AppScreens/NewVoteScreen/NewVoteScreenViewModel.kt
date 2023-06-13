@@ -32,12 +32,4 @@ class NewVoteScreenViewModel @Inject constructor(savedStateHandle: SavedStateHan
     fun onTemaChange(newTema: String) {
         this.tema= newTema
     }
-    fun limpiarTodo(){
-        this.asunto=""
-        this.descripcion=""
-        this.respuesta=""
-        this.respuestas= mutableListOf<String>()
-        this.tema=""
-        this.temas= mutableListOf<String>()
-    }
 }

@@ -81,20 +81,27 @@ fun NewVoteScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Box() {
-                    LazyColumn(modifier= Modifier
-                        .padding(
-                            top = heightPercentage(7),
-                            start = widthPercentage(10),
-                            end = widthPercentage(10),
-                            bottom = heightPercentage(7)
-                        )
-                        .background(Color.White, RoundedCornerShape(5))) {
+                Box {
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(
+                                top = heightPercentage(7),
+                                start = widthPercentage(10),
+                                end = widthPercentage(10),
+                                bottom = heightPercentage(7)
+                            )
+                            .background(Color.White, RoundedCornerShape(5))
+                    ) {
 
                         item {
+
                             AsuntoTextField(
                                 text = viewModel.asunto,
-                                onValueChange = viewModel::onAsuntoChange
+                                onValueChange = { newAsunto ->
+                                    if (viewModel.asunto.length > 1000) {
+                                        viewModel.onAsuntoChange(newAsunto)
+                                    }
+                                }
                             )
                             DescriptionTextField(
                                 text = viewModel.descripcion,
@@ -102,12 +109,24 @@ fun NewVoteScreen(
                             )
                             Row {
                                 RespuestaTextField(
+
                                     text = viewModel.respuesta,
-                                    onValueChange = viewModel::onRespuestaChange
+                                    onValueChange = { newRespuesta ->
+                                        if (newRespuesta.length <= 1000) viewModel.onRespuestaChange(
+                                            newRespuesta
+                                        )
+                                    }
                                 ) {
-                                    if (viewModel.respuesta.isNotBlank())viewModel.respuestas.add(viewModel.respuesta) else Toast.makeText(context, "No se puede añadir una respuesta vacía", Toast.LENGTH_SHORT).show()
+                                    if (viewModel.respuesta.isNotBlank()) viewModel.respuestas.add(
+                                        viewModel.respuesta
+                                    ) else Toast.makeText(
+                                        context,
+                                        "No se puede añadir una respuesta vacía",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                     viewModel.respuesta = ""
                                 }
+
 
                             }
                             Column {
@@ -126,15 +145,21 @@ fun NewVoteScreen(
                                             .offset(x = widthPercentage(-1))
                                             .height(heightPercentage(6)),
                                         trailingIcon = {
-                                            IconButton(onClick = {
-                                                viewModel.respuesta += " "
-                                                viewModel.respuestas.remove(respuesta)
-                                                viewModel.respuesta = viewModel.respuesta.removeSuffix(" ")
-                                            },
+                                            IconButton(
+                                                onClick = {
+                                                    viewModel.respuesta += " "
+                                                    viewModel.respuestas.remove(respuesta)
+                                                    viewModel.respuesta =
+                                                        viewModel.respuesta.removeSuffix(" ")
+                                                },
                                                 modifier = Modifier
                                                     .width(widthPercentage(5))
-                                            ){
-                                                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.remove), contentDescription = "Remove", tint = Color.Red)
+                                            ) {
+                                                Icon(
+                                                    imageVector = ImageVector.vectorResource(id = R.drawable.remove),
+                                                    contentDescription = "Remove",
+                                                    tint = Color.Red
+                                                )
                                             }
                                         },
                                         colors = TextFieldDefaults.textFieldColors(
@@ -152,7 +177,11 @@ fun NewVoteScreen(
                                     text = viewModel.tema,
                                     onValueChange = viewModel::onTemaChange
                                 ) {
-                                    if (viewModel.tema.isNotBlank())viewModel.temas.add(viewModel.tema) else Toast.makeText(context, "No se puede añadir un tema vacía", Toast.LENGTH_SHORT).show()
+                                    if (viewModel.tema.isNotBlank()) viewModel.temas.add(viewModel.tema) else Toast.makeText(
+                                        context,
+                                        "No se puede añadir un tema vacía",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                     viewModel.tema = ""
                                 }
                             }
@@ -172,15 +201,21 @@ fun NewVoteScreen(
                                             .offset(x = widthPercentage(-1))
                                             .height(heightPercentage(6)),
                                         trailingIcon = {
-                                            IconButton(onClick = {
-                                                viewModel.tema += " "
-                                                viewModel.temas.remove(tema)
-                                                viewModel.tema = viewModel.tema.removeSuffix(" ")
-                                            },
+                                            IconButton(
+                                                onClick = {
+                                                    viewModel.tema += " "
+                                                    viewModel.temas.remove(tema)
+                                                    viewModel.tema =
+                                                        viewModel.tema.removeSuffix(" ")
+                                                },
                                                 modifier = Modifier
                                                     .width(widthPercentage(5))
-                                            ){
-                                                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.remove), contentDescription = "Remove", tint = Color.Red)
+                                            ) {
+                                                Icon(
+                                                    imageVector = ImageVector.vectorResource(id = R.drawable.remove),
+                                                    contentDescription = "Remove",
+                                                    tint = Color.Red
+                                                )
                                             }
                                         },
                                         colors = TextFieldDefaults.textFieldColors(
@@ -193,16 +228,16 @@ fun NewVoteScreen(
                                     )
                                 }
                             }
-                            SubmitButton{
-                                if (viewModel.asunto.isEmpty()  || viewModel.respuestas.isEmpty() || viewModel.temas.isEmpty()) {
+                            SubmitButton {
+                                if (viewModel.asunto.isEmpty() || viewModel.respuestas.isEmpty() || viewModel.temas.isEmpty()) {
                                     Toast.makeText(
                                         context,
                                         "Los campos asunto , respuestas y temas no pueden estar vacios",
                                         Toast.LENGTH_SHORT
                                     ).show()
-                                }else{
+                                } else {
                                     val recuento = mutableListOf<Int>()
-                                    for (respuesta in viewModel.respuestas.indices){
+                                    for (respuesta in viewModel.respuestas.indices) {
                                         recuento.add(0)
                                     }
                                     FBVotacion.createVotacion(
@@ -214,7 +249,11 @@ fun NewVoteScreen(
                                             temas = viewModel.temas
                                         )
                                     )
-                                    Toast.makeText(context, "Votacion creada con éxito", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Votacion creada con éxito",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                     navController.popBackStack()
                                 }
                             }
@@ -256,7 +295,11 @@ fun TopBar(navController: NavController) {
 fun AsuntoTextField(text: String, onValueChange: (String) -> Unit) {
 
     Column(
-        modifier = Modifier.padding(start = heightPercentage(2), end = heightPercentage(2), top = heightPercentage(2)),
+        modifier = Modifier.padding(
+            start = heightPercentage(2),
+            end = heightPercentage(2),
+            top = heightPercentage(2)
+        ),
 
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center
     ) {
@@ -399,13 +442,16 @@ fun SubmitButton(
     onClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier.padding(start = heightPercentage(2), end = heightPercentage(2), bottom = heightPercentage(2)),
+        modifier = Modifier.padding(
+            start = heightPercentage(2),
+            end = heightPercentage(2),
+            bottom = heightPercentage(2)
+        ),
 
         horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Bottom
     ) {
         Button(
-            onClick = { onClick() }
-            ,
+            onClick = { onClick() },
             modifier = Modifier
                 .height(heightPercentage(9))
                 .fillMaxWidth()

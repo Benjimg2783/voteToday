@@ -1,6 +1,5 @@
 package com.example.votetoday.Common
 
-import android.util.DisplayMetrics
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -30,14 +29,6 @@ class DeviceConfiguration{
             screenHeight = height
             screenWidth = width
             this.dpi = dpi
-        }
-
-        fun returnHeight():Dp{
-            return screenHeight
-        }
-
-        fun returnWidth():Dp{
-            return screenWidth
         }
 
         fun heightPercentage(targetPercentage : Int): Dp {

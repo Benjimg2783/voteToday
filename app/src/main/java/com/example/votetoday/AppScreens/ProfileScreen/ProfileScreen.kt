@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
@@ -138,8 +137,10 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
                 OutlinedTextField(
                     value = viewModel.uName,
                     onValueChange = { newUName ->
-                        viewModel.onUnameChange(newUName)
-                        viewModel.uName = newUName
+                        if(viewModel.uName.length < 30){
+                            viewModel.onUnameChange(newUName)
+                            viewModel.uName = newUName
+                        }
                     },
                     trailingIcon = {
                         IconButton(onClick = {
@@ -276,7 +277,11 @@ fun MostrarVotacion(votacion: Votacion) {
                                     start = widthPercentage(4),
                                     end = widthPercentage(2)
                                 ),
-                            color = VoteTodayOrange,
+                            color = if (votacion.recuento[index] == votacion.recuento.max()) {
+                                Color(0xFF8BC34A)
+                            } else {
+                                Color.Red
+                            },
                             textAlign = TextAlign.Center
                         )
 

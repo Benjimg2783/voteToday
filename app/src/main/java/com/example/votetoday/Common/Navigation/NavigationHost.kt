@@ -44,8 +44,6 @@ fun NavigationHost(navController: NavHostController, startDestination: String) {
 
 class NavigationFunctions() {
     companion object {
-        //region BottomBar Status
-        var changeScreen = mutableStateOf(false)
         var screenID = mutableStateOf(0)
 
         //endregion
