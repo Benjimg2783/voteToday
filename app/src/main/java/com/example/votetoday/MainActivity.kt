@@ -24,20 +24,21 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    @Composable
+    fun Inicio() {
+        GetDeviceConfiguration()
+
+        val user = FirebaseAuth.getInstance().currentUser
+
+        val startDestination: String = if (user == null){
+            Screens.LoginScreen.ruta
+        } else Screens.MainScreen.ruta
+
+        val navController = rememberNavController()
+        NavigationHost(navController,startDestination)
+    }
+
 }
 
-@Composable
-fun Inicio() {
-    GetDeviceConfiguration()
-
-    val user = FirebaseAuth.getInstance().currentUser
-
-    val startDestination: String = if (user == null){
-        Screens.LoginScreen.ruta
-    } else Screens.MainScreen.ruta
-
-    val navController = rememberNavController()
-    NavigationHost(navController,startDestination)
-}
 
 

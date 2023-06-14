@@ -142,7 +142,7 @@ object FBUserQuerys {
             }
         }
         suspend fun getFotoPerfil(uid: String?,context: Context): String? = suspendCoroutine { c ->
-            val pfp = Firebase.storage.reference.child("porfileimages/${uid}/fotoPefil.png")
+            val pfp = Firebase.storage.reference.child("porfileimages/$uid/fotoPefil.png")
             if (Firebase.auth.uid != null) {
 
                 pfp.downloadUrl

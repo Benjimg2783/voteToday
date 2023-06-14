@@ -98,7 +98,7 @@ fun NewVoteScreen(
                             AsuntoTextField(
                                 text = viewModel.asunto,
                                 onValueChange = { newAsunto ->
-                                    if (viewModel.asunto.length > 1000) {
+                                    if (viewModel.asunto.length < 1000) {
                                         viewModel.onAsuntoChange(newAsunto)
                                     }
                                 }
@@ -112,7 +112,7 @@ fun NewVoteScreen(
 
                                     text = viewModel.respuesta,
                                     onValueChange = { newRespuesta ->
-                                        if (newRespuesta.length <= 1000) viewModel.onRespuestaChange(
+                                        if (newRespuesta.length <= 200) viewModel.onRespuestaChange(
                                             newRespuesta
                                         )
                                     }
