@@ -6,25 +6,20 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.indication
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,7 +45,6 @@ import com.example.votetoday.Common.SystemBarColor
 import com.example.votetoday.R
 import com.example.votetoday.ui.theme.VoteTodayBackground
 import com.example.votetoday.ui.theme.VoteTodayOrange
-import kotlinx.coroutines.flow.collect
 
 @Preview
 @Composable
@@ -58,12 +52,11 @@ fun PreviewMainScreen() {
     MainScreen(navController = rememberNavController())
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MainScreen(navController: NavController, viewModel: MainScreenViewModel = hiltViewModel()) {
 
-    //si pulsas el boton despues de subir una votacion no te sale hasta que no te sales de la pagina. un sec
     viewModel.refreshing = true
     viewModel.updateVotaciones()
 
@@ -100,9 +93,6 @@ fun MainScreen(navController: NavController, viewModel: MainScreenViewModel = hi
                     .padding(top = heightPercentage(15), bottom = heightPercentage(7))
                     .background(Color.White)
             ) {
-                item {
-                    //refrescar la pagina al tirar hacia abajo
-                    }
 
                 //Lista de votaciones
                 if (viewModel.refreshing) {
@@ -211,7 +201,6 @@ fun MostrarVotacion(votacion: Votacion, viewModel: MainScreenViewModel) {
                                 viewModel.refreshing = true
                                 viewModel.updateVotaciones()
 
-                                // pero se actualiza sola no? una vez q hagas el refresh de la pantalla se vuelve a ejecutar la pagina
                             },
                             colors = ButtonDefaults.buttonColors(
                                 backgroundColor = VoteTodayOrange
